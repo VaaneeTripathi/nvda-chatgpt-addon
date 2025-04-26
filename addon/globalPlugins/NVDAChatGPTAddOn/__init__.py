@@ -1,13 +1,15 @@
 import globalPluginHandler
 import wx
-import globalPluginHandlerimport ui
+import globalPluginHandler
+import ui
+import gui
 import config
 from logHandler import log
 from scriptHandler import script
 
 ADDON_SUMMARY = _("NVDA Add-on for ChatGPT")
 
-class GlobalPlugin(globalPluginHandler.GlobalPlugin)
+class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     """
     Implemrnting global plugin for the addon
     """
