@@ -13,13 +13,6 @@ This add-on provides a simple interface for NVDA users to send queries to ChatGP
 - Access via keyboard shortcut (NVDA+Shift+C) or through NVDA's Tools menu
 - Configure API settings through a dedicated settings dialog
 
-## Installation
-
-1. Download the `.nvda-addon` file from the releases section
-2. Open the file to start the NVDA add-on installation process
-3. Follow the prompts to complete installation
-4. Restart NVDA when prompted
-
 ## Usage
 
 1. Press `NVDA+Shift+C` to open the ChatGPT dialog
