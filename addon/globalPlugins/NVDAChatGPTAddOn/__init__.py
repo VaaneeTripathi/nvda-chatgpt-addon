@@ -35,7 +35,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin)
         dialog.Destroy()
     
     @script(
-        description=_("Opens ChatGPT Assistant dialog"),
+        description=_("Opens ChatGPT Addon dialog"),
         gesture="kb:NVDA+shift+c"
     )
     def script_openChatGPTDialog(self, gesture):
