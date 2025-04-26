@@ -10,3 +10,4 @@ addon/doc/en/
 .sconsign.dblite
 .github
 .gitattributes
+.nvda-addon

@@ -6,17 +6,19 @@ import gui
 import config
 from logHandler import log
 from scriptHandler import script
+from .interface import ChatGPTInterface
 
 ADDON_SUMMARY = _("NVDA Add-on for ChatGPT")
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     """
-    Implemrnting global plugin for the addon
+    Implementing global plugin for the addon
     """
     def __init__(self):
 
         # initial setup for global plugin
         super(GlobalPlugin, self).__init__()
+        self.chatgpt = ChatGPTInterface
         # create menu item to add to NVDA menu
         self.createMenu()
     
@@ -56,9 +58,18 @@ class ChatGPTDialog(wx.Dialog):
     def __init__(self, parent):
         super(ChatGPTDialog, self).__init__(
             parent,
-            title=_("ChatGPT Addon"),
+            title=_("ChatGPT Assistant"),
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
+        
+        # Get the global plugin instance to access the ChatGPT interface
+        for plugin in globalPluginHandler.runningPlugins:
+            if isinstance(plugin, GlobalPlugin):
+                self.chatgpt = plugin.chatgpt
+                break
+        else:
+            # Fallback if plugin instance not found
+            self.chatgpt = ChatGPTInterface()
         
         # Create dialog layout
         main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -88,6 +99,10 @@ class ChatGPTDialog(wx.Dialog):
         self.submit_button.Bind(wx.EVT_BUTTON, self.onSubmit)
         button_sizer.Add(self.submit_button, flag=wx.RIGHT, border=10)
         
+        self.settings_button = wx.Button(self, label=_("Settings"))
+        self.settings_button.Bind(wx.EVT_BUTTON, self.onSettings)
+        button_sizer.Add(self.settings_button, flag=wx.RIGHT, border=10)
+        
         close_button = wx.Button(self, wx.ID_CLOSE, _("Close"))
         close_button.Bind(wx.EVT_BUTTON, self.onClose)
         button_sizer.Add(close_button)
@@ -115,13 +130,27 @@ class ChatGPTDialog(wx.Dialog):
             ui.message(_("Please enter a question"))
             return
         
-        # TODO: Implement actual ChatGPT API interaction
-        # For now, just echo the input as a demonstration
-        response = f"You asked: {query}\n\nThis is where the ChatGPT response will appear."
+        # Check if API key is set
+        if not self.chatgpt.api_key:
+            ui.message(_("API key not set. Please configure in settings."))
+            return
+        
+        # Show processing message
+        ui.message(_("Processing your query..."))
+        self.response_field.SetValue(_("Waiting for response..."))
+        
+        # Make the API call and get response
+        response = self.chatgpt.send_query(query)
         self.response_field.SetValue(response)
         
         # Announce that response is ready
         ui.message(_("Response received"))
+    
+    def onSettings(self, evt):
+        # Open settings dialog
+        dialog = SettingsDialog(self, self.chatgpt)
+        dialog.ShowModal()
+        dialog.Destroy()
         
     def onClose(self, evt):
         self.EndModal(wx.ID_CLOSE)
