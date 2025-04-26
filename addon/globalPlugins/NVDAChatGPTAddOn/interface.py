@@ -2,9 +2,10 @@ import json
 import os
 import config
 from logHandler import log
+import globalVars
 
-# Path for storing user settings
-CONFIG_PATH = os.path.join(config.getUserConfigPath(), "addons", "chatGPTAddon")
+# Get the user config path
+CONFIG_PATH = os.path.join(globalVars.appArgs.configPath, "nvda-chatgpt-addon")
 
 class ChatGPTInterface:
     """

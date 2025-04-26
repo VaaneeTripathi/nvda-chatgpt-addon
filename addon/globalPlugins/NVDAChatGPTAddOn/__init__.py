@@ -62,14 +62,16 @@ class ChatGPTDialog(wx.Dialog):
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
         
-        # Get the global plugin instance to access the ChatGPT interface
-        for plugin in globalPluginHandler.runningPlugins:
-            if isinstance(plugin, GlobalPlugin):
-                self.chatgpt = plugin.chatgpt
-                break
-        else:
-            # Fallback if plugin instance not found
-            self.chatgpt = ChatGPTInterface()
+        self.chatgpt = ChatGPTInterface()
+
+        # # Get the global plugin instance to access the ChatGPT interface
+        # for plugin in globalPluginHandler.runningPlugins:
+        #     if isinstance(plugin, GlobalPlugin):
+        #         self.chatgpt = plugin.chatgpt
+        #         break
+        # else:
+        #     # Fallback if plugin instance not found
+        #     self.chatgpt = ChatGPTInterface()
         
         # Create dialog layout
         main_sizer = wx.BoxSizer(wx.VERTICAL)
