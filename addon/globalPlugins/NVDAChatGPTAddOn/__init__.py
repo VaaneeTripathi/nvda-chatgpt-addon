@@ -156,3 +156,74 @@ class ChatGPTDialog(wx.Dialog):
         
     def onClose(self, evt):
         self.EndModal(wx.ID_CLOSE)
+
+
+class SettingsDialog(wx.Dialog):
+    def __init__(self, parent, chatgpt_interface):
+        super(SettingsDialog, self).__init__(
+            parent,
+            title=_("ChatGPT Assistant Settings"),
+            style=wx.DEFAULT_DIALOG_STYLE
+        )
+        
+        self.chatgpt = chatgpt_interface
+        
+        # Create dialog layout
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        
+        # API Key
+        api_key_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        api_key_label = wx.StaticText(self, label=_("API Key:"))
+        self.api_key_field = wx.TextCtrl(self, value=self.chatgpt.api_key)
+        api_key_sizer.Add(api_key_label, flag=wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, border=10)
+        api_key_sizer.Add(self.api_key_field, proportion=1, flag=wx.EXPAND)
+        main_sizer.Add(api_key_sizer, flag=wx.EXPAND | wx.ALL, border=10)
+        
+        # Model selection
+        model_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        model_label = wx.StaticText(self, label=_("Model:"))
+        self.model_choice = wx.Choice(self, choices=["gpt-3.5-turbo", "gpt-4"])
+        # Set the current model
+        if self.chatgpt.model == "gpt-4":
+            self.model_choice.SetSelection(1)
+        else:
+            self.model_choice.SetSelection(0)
+        model_sizer.Add(model_label, flag=wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, border=10)
+        model_sizer.Add(self.model_choice, flag=wx.EXPAND)
+        main_sizer.Add(model_sizer, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=10)
+        
+        # Max tokens
+        max_tokens_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        max_tokens_label = wx.StaticText(self, label=_("Max Tokens:"))
+        self.max_tokens_field = wx.SpinCtrl(self, min=100, max=4000, initial=self.chatgpt.max_tokens)
+        max_tokens_sizer.Add(max_tokens_label, flag=wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, border=10)
+        max_tokens_sizer.Add(self.max_tokens_field, flag=wx.EXPAND)
+        main_sizer.Add(max_tokens_sizer, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=10)
+        
+        # Buttons
+        buttons_sizer = wx.StdDialogButtonSizer()
+        self.save_button = wx.Button(self, wx.ID_OK, _("Save"))
+        self.cancel_button = wx.Button(self, wx.ID_CANCEL, _("Cancel"))
+        self.save_button.SetDefault()
+        buttons_sizer.AddButton(self.save_button)
+        buttons_sizer.AddButton(self.cancel_button)
+        buttons_sizer.Realize()
+        main_sizer.Add(buttons_sizer, flag=wx.EXPAND | wx.ALL, border=10)
+        
+        self.SetSizer(main_sizer)
+        self.Fit()
+        
+        # Bind events
+        self.save_button.Bind(wx.EVT_BUTTON, self.onSave)
+        
+    def onSave(self, evt):
+        # Update settings
+        self.chatgpt.api_key = self.api_key_field.GetValue()
+        self.chatgpt.model = self.model_choice.GetString(self.model_choice.GetSelection())
+        self.chatgpt.max_tokens = self.max_tokens_field.GetValue()
+        
+        # Save settings to file
+        self.chatgpt.save_settings()
+        
+        # Close dialog
+        self.EndModal(wx.ID_OK)
